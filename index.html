@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Moodle-logstore xAPI by jlowe64</title>
+    <title>Moodle-logstore xAPI Plugin by jlowe64</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,8 +11,8 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Moodle-logstore xAPI</h1>
-      <h2 class="project-tagline">A logstore plugin currently implementing xAPI or TinCan, but modular enough to add any API to any LRS.</h2>
+      <h1 class="project-name">Moodle-logstore xAPI Plugin</h1>
+      <h2 class="project-tagline">A logstore plugin implementing xAPI or TinCan.</h2>
       <a href="https://github.com/jlowe64/moodle-logstore_xapi" class="btn">View on GitHub</a>
       <a href="https://github.com/jlowe64/moodle-logstore_xapi/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/jlowe64/moodle-logstore_xapi/tarball/master" class="btn">Download .tar.gz</a>
@@ -22,14 +22,55 @@
       <h3>
 <a id="about" class="anchor" href="#about" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About</h3>
 
-<p><a href="https://moodle.org/plugins/view/logstore_xapi">Moodle Logstore xAPI</a></p>
+<h1>
+<a id="what-does-it-do" class="anchor" href="#what-does-it-do" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What does it do?</h1>
+
+<p><a href="https://moodle.org/plugins/view/logstore_xapi">Moodle Logstore xAPI</a> simply "emits events from the Moodle Logstore as xAPI or TinCan statements". For those that don't know, the Moodle Logstore is a log of activities in Moodle. When you view a course, complete a quiz, or grade a student a log of that activity is recorded in the Logstore. The plugin uses these logs to produce xAPI/TinCan statements and then sends (emits) them to an LRS (Learning Record Store) that you can configure.</p>
+
+<h1>
+<a id="how-does-it-work" class="anchor" href="#how-does-it-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How does it work?</h1>
+
+<p>The plugin is made up of three parts, an Expander, a Translator, and an Emitter. Every log entry goes through each of these parts in a six step process before finally reaching the LRS (see below).</p>
+
+<ul>
+<li>The plugin passes the log entry from the logstore_standard_log to the Expander.</li>
+<li>The Expander expands the log entry with data from your Moodle database.</li>
+<li>The plugin passes the expanded event from step 2 to the Translator.</li>
+<li>The Translator translates the expanded event to xAPI/TinCan recipe options.</li>
+<li>The plugin passes the translated event from step 4 to the Emitter.</li>
+<li>The Emitter constructs the translated event as an xAPI/TinCan statement and emits it to the LRS.</li>
+</ul>
 
 <hr>
 
 <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h3>
 
-<p><a href="docs/installation.md">Installation</a></p>
+<p>This page contains a guide for users wanting to install the plugin. You obviously need to have <a href="https://moodle.org/">Moodle</a> installed first and you need to be logged in as an Admin.</p>
+
+<ol>
+<li>Download the plugin. <a href="../xapi.zip?raw=true">Click here to begin download</a>.</li>
+<li>Go to "<a href="http://www.example.com/admin/tool/installaddon/index.php">http://www.example.com/admin/tool/installaddon/index.php</a>" (replacing "www.example.com" with your own domain).</li>
+<li>Drag and drop your download from step 1.</li>
+<li>Click "Install plugin from the ZIP file".</li>
+<li>Click "Install plugin!".</li>
+<li>Click "Upgrade Moodle database now".</li>
+<li>Click "Continue".</li>
+<li>Set your "endpoint" to your LRS endpoint (e.g. "<a href="http://demo.learninglocker.net/data/xAPI">http://demo.learninglocker.net/data/xAPI</a>").</li>
+<li>Set your "username" to your LRS basic auth username (e.g. "d416e6220812740d3922eb09813ebb4163e8eb3e").</li>
+<li>Set your "password" to your LRS basic auth password (e.g. "bc7e0a2edd5d1969b6d774e679d4eb4e7a35be13").</li>
+<li>Click "Save changes".</li>
+<li>Go to "<a href="http://www.example.com/admin/settings.php?section=managelogging">http://www.example.com/admin/settings.php?section=managelogging</a>" (replacing "www.example.com" with your own domain).</li>
+<li>Enable the "Logstore xAPI" plugin.</li>
+</ol>
+
+<p><em>Note that the above example LRS endpoint, username, and password utilise the <a href="http://demo.learninglocker.net/">demo LRS</a> provided by <a href="http://learninglocker.net/">Learning Locker</a>. If you're utilising the demo LRS, you can login to the website with the email "<a href="mailto:demouser@learninglocker.net">demouser@learninglocker.net</a>" and the password "demouser". Once logged in, you can view statements on the <a href="http://demo.learninglocker.net/lrs/554a45e98fbdd7cd406c171e/statements">"Statements" page for the "Demo" LRS</a>.</em></p>
+
+<ul>
+<li>If zip installation is disabled, you can unzip the zip file to moodle/admin/tool/log/store instead of steps 3 to 5 above.*</li>
+</ul>
+
+<p><em>The settings you configured in steps 8, 9, and 10 can be changed by navigating to "<a href="http://www.example.com/admin/settings.php?section=logsettingxapi">http://www.example.com/admin/settings.php?section=logsettingxapi</a>" (replacing "www.example.com" with your own domain).</em></p>
 
 <hr>
 
@@ -56,7 +97,7 @@
 <p><a href="docs/developers.md">Developer documentation</a></p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/jlowe64/moodle-logstore_xapi">Moodle-logstore xAPI</a> is maintained by <a href="https://github.com/jlowe64">jlowe64</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/jlowe64/moodle-logstore_xapi">Moodle-logstore xAPI Plugin</a> is maintained by <a href="https://github.com/jlowe64">jlowe64</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
