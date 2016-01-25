@@ -77,24 +77,51 @@
 <h3>
 <a id="road-map" class="anchor" href="#road-map" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Road Map</h3>
 
-<hr>
-
-<h3>
-<a id="design" class="anchor" href="#design" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Design</h3>
-
-<p><a href="docs/design.md">Plugin design</a></p>
+<p>Coming soon!</p>
 
 <hr>
 
 <h3>
 <a id="style-guide" class="anchor" href="#style-guide" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Style Guide</h3>
 
-<hr>
+<p><code>var_names</code>
+<code>methodNames</code>
+<code>ClassAndNamespaceNames</code>
+<code>CONST_NAMES</code></p>
 
-<h3>
-<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h3>
+<ul>
+<li>Inline comments are one line and follow two line breaks (unless at the beginning of a block or at the end of a line).</li>
+<li>All comments should adhere to English grammar and punctuation rules.</li>
+<li>All methods should have docstrings (which may simply contain "<a href="https://github.com/override" class="user-mention">@override</a>").</li>
+<li>Round brackets followed by curly brackets should on the same line separated by a space. For example:</li>
+</ul>
 
-<p><a href="docs/developers.md">Developer documentation</a></p>
+<pre><code>if (...) {
+
+}
+</code></pre>
+
+<pre><code>methodName(...) {
+
+}
+</code></pre>
+
+<ul>
+<li>Else keyword should follow a closing curly bracket and a space on a single line. For example:</li>
+</ul>
+
+<pre><code>} else {
+</code></pre>
+
+<pre><code>} else if (...) {
+</code></pre>
+
+<ul>
+<li>All non-empty cases in a switch statement should contain a break or return statement.</li>
+<li>The first bracket of method calls or definitions should not have a space between the method name and the first bracket.</li>
+<li>Strings should be single quotation. For example:<code>'hello world'</code> instead of <code>"hello world"</code>
+</li>
+</ul>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/jlowe64/moodle-logstore_xapi">Moodle-logstore xAPI Plugin</a> is maintained by <a href="https://github.com/jlowe64">jlowe64</a>.</span>
