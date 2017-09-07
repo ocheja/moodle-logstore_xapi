@@ -64,6 +64,7 @@ class Controller extends PhpObj {
         '\mod_facetoface\event\take_attendance' => 'FacetofaceAttend',
         '\mod_scorm\event\scoreraw_submitted' => 'ScormScoreRawSubmitted',
         '\mod_scorm\event\status_submitted' => 'ScormStatusSubmitted',
+        '\core\event\role_assigned' => 'RoleAssigned',
     ];
 
     /**
