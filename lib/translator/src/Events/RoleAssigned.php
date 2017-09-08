@@ -28,12 +28,12 @@ class RoleAssigned extends CourseViewed {
     public function read(array $opts) {
         return [array_merge(parent::read($opts)[0], [
             'recipe' => 'role_assigned',
-            'user_id' => $opts['user']->id,
-            'user_url' => $opts['user']->url,
-            'user_name' => $opts['user']->fullname,
-            'instructor_id' => $opts['relateduser']->id,
-            'instructor_url' => $opts['relateduser']->url,
-            'instructor_name' => $opts['relateduser']->fullname,
+            'user_id' => $opts['relateduser']->id,
+            'user_url' => $opts['relateduser']->url,
+            'user_name' => $opts['relateduser']->fullname,
+            'instructor_id' => $opts['user']->id,
+            'instructor_url' => $opts['user']->url,
+            'instructor_name' => $opts['user']->fullname,
         ])];
     }
 }
