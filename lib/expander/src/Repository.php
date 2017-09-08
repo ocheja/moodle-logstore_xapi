@@ -277,6 +277,16 @@ class Repository extends PhpObj {
     }
 
     /**
+     * Reads a role from the store with the given id.
+     * @param String $id
+     * @return PhpObj
+     */
+    public function read_role($id) {
+        $model = $this->read_object($id, 'role');
+        return $model;
+    }
+
+    /**
      * Reads a discussion from the store with the given id.
      * @param String $id
      * @return PhpObj

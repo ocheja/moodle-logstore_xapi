@@ -86,6 +86,9 @@ class Controller extends PhpObj {
             $route = isset($opts['eventname']) ? $opts['eventname'] : '';
             if (isset(static::$routes[$route]) && ($opts['userid'] > 0 || $opts['relateduserid'] > 0)) {
                 try {
+                    if($opts['objecttable']=='role' && $route == '\core\event\role_assigned' && $this->isStudentEnrollViaRoleAssign($opts['objectid']) ){
+                        throw new \Exception();
+                    }
                     $event = '\LogExpander\Events\\'.static::$routes[$route];
                     array_push($results , (new $event($this->repo))->read($opts));
                 } catch (\Exception $e) { // @codingStandardsIgnoreLine
@@ -94,5 +97,10 @@ class Controller extends PhpObj {
             }
         }
         return $results;
+    }
+
+    private function isStudentEnrollViaRoleAssign($roleid) {
+        $role = $this->repo->read_role($roleid);
+        return $role->archetype=='student';
     }
 }
