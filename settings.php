@@ -33,6 +33,14 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('logstore_xapi/endpoint',
         get_string('endpoint', 'logstore_xapi'), '',
         'http://example.com/endpoint/location/', PARAM_URL));
+    // Sync Endpoint.
+    $settings->add(new admin_setting_configtext('logstore_xapi/syncendpoint',
+        get_string('syncendpoint', 'logstore_xapi'), '',
+        'http://example.com/endpoint/location/', PARAM_URL));
+    // Token Endpoint.
+    $settings->add(new admin_setting_configtext('logstore_xapi/tokenendpoint',
+        get_string('tokenendpoint', 'logstore_xapi'), '',
+        'http://example.com/endpoint/location/', PARAM_URL));
     // Username.
     $settings->add(new admin_setting_configtext('logstore_xapi/username',
         get_string('username', 'logstore_xapi'), '', 'username', PARAM_TEXT));

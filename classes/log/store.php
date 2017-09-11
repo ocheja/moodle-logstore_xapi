@@ -71,7 +71,9 @@ class store extends php_obj implements log_writer {
         $routes = $this->get_config('routes', '');
         $this->routes = $routes === '' ? [] : explode(',', $routes);
         $this->syncInstance = new syncHandler\sync();
-        $this->syncInstance->getLastestLRSEvent();
+        $_SERVER['token'] = $this->syncInstance->getLRSToken($this->get_config('username', ''),
+            $this->get_config('password', ''), $this->get_config('tokenendpoint', 'http://10.236.173.83:9966/api/auth/login'))->token;
+        $this->syncInstance->getLastestLRSEvent($this->get_config('syncendpoint', 'http://10.236.173.83:9966/api/event/sync/latest'),$_SERVER['token']);
     }
 
     /**
