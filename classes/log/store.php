@@ -42,6 +42,7 @@ use \LogExpander\Repository as moodle_repository;
 use \TinCan\RemoteLRS as tincan_remote_lrs;
 use \moodle_exception as moodle_exception;
 use \stdClass as php_obj;
+use \logstore_xapi\sync as syncHandler;
 
 /**
  * This class processes events and enables them to be sent to a logstore.
@@ -69,6 +70,8 @@ class store extends php_obj implements log_writer {
         $this->logguests = $this->get_config('logguests', 1);
         $routes = $this->get_config('routes', '');
         $this->routes = $routes === '' ? [] : explode(',', $routes);
+        $this->syncInstance = new syncHandler\sync();
+        $this->syncInstance->getLastestLRSEvent();
     }
 
     /**
