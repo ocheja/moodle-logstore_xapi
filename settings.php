@@ -47,6 +47,10 @@ if ($hassiteconfig) {
     // Key or password.
     $settings->add(new admin_setting_configtext('logstore_xapi/password',
         get_string('password', 'logstore_xapi'), '', 'password', PARAM_TEXT));
+    // Synchronize data from standard log to current time.
+    $settings->add(new admin_setting_configcheckbox('logstore_xapi/syncexistinglogs',
+        get_string('syncexistinglogs', 'logstore_xapi'),
+        get_string('syncexistinglogs_desc', 'logstore_xapi'), 0));
 
     // Switch background batch mode on.
     $settings->add(new admin_setting_configcheckbox('logstore_xapi/backgroundmode',

@@ -29,7 +29,8 @@ class sync extends php_obj
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         curl_close($ch);
-        debugging('Result From LRS: ' . $output);
+        debugging('Result From LRS: ' . $output, DEBUG_DEVELOPER);
+        return json_decode($output);
     }
 
     public function getLRSToken($apiKey,$apiSecret,$auth_endpoint)
@@ -39,14 +40,14 @@ class sync extends php_obj
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_endpoint);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'X-Requested-With: XMLHttpRequest'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,$data_json);
         $output = curl_exec($ch);
         curl_close($ch);
-        debugging('Result From LRS: ' . $output);
-        return $output;
+        debugging('Result From LRS: ' . $output, DEBUG_DEVELOPER);
+        return json_decode($output);
     }
 
 }

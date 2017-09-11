@@ -26,6 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['endpoint'] = 'Endpoint';
+$string['syncendpoint'] = 'Synchronization Endpoint';
+$string['tokenendpoint'] = 'Token Endpoint';
 $string['settings'] = 'General Settings';
 $string['xapifieldset'] = 'Custom example fieldset';
 $string['xapi'] = 'xAPI';
@@ -35,6 +37,8 @@ $string['pluginname'] = 'Logstore xAPI';
 $string['submit'] = 'Submit';
 $string['username'] = 'Username';
 $string['xapisettingstitle'] = 'Logstore xAPI Settings';
+$string['syncexistinglogs'] = 'Send statements in Existing in Standard Log?';
+$string['syncexistinglogs_desc'] = 'Send statements in Standard log to LRS. It first checks for most recent message from this tenant to LRS and then sends all events that occurred after that to logstore_xapi for tasks to pick up.';
 $string['backgroundmode'] = 'Send statements by scheduled task?';
 $string['backgroundmode_desc'] = 'This will force Moodle to send the statements to the LRS in the background,
         via a cron task. This will make the process less close to real time, but will help to prevent unpredictable
