@@ -72,8 +72,8 @@ class store extends php_obj implements log_writer {
         $this->routes = $routes === '' ? [] : explode(',', $routes);
         $this->syncInstance = new syncHandler\sync();
         $_SERVER['token'] = $this->syncInstance->getLRSToken($this->get_config('username', ''),
-            $this->get_config('password', ''), $this->get_config('tokenendpoint', 'http://10.236.173.83:9966/api/auth/login'))->token;
-        $this->syncInstance->getLastestLRSEvent($this->get_config('syncendpoint', 'http://10.236.173.83:9966/api/event/sync/latest'),$_SERVER['token']);
+            $this->get_config('password', ''), $this->get_config('tokenendpoint', 'http://10.236.173.83:6060/lrs/api/auth/login'))->token;
+        $this->syncInstance->getLastestLRSEvent($this->get_config('syncendpoint', 'http://10.236.173.83:6060/lrs/api/event/sync/latest'),$_SERVER['token']);
     }
 
     /**
@@ -205,16 +205,16 @@ class store extends php_obj implements log_writer {
             $this->get_config('username', ''),
             $this->get_config('password', '')
         );
-        $headers = $remotelrs.getHeaders();
+        $headers = $remotelrs->getHeaders();
         if($headers != null) {
             $headers->userAddress = $USER->profile['blockchainAddress'];
             debugging('Not Empty Headers: ' .$headers, DEBUG_DEVELOPER);
-            $remotelrs.setHeaders($headers);
+            $remotelrs->setHeaders($headers);
         } else {
             $headers = new stdClass();
             $headers->userAddress = $USER->profile['blockchainAddress'];
             debugging('Empty Headers: ' .$headers, DEBUG_DEVELOPER);
-            $remotelrs.setHeaders($headers);
+            $remotelrs->setHeaders($headers);
         }
         if (!empty($CFG->proxyhost)) {
             $remotelrs->setProxy($CFG->proxyhost.':'.$CFG->proxyport);
