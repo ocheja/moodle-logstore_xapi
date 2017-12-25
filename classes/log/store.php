@@ -198,12 +198,24 @@ class store extends php_obj implements log_writer {
      */
     private function connect_xapi_repository() {
         global $CFG;
+        global $USER;
         $remotelrs = new tincan_remote_lrs(
             $this->get_config('endpoint', ''),
             '1.0.1',
             $this->get_config('username', ''),
             $this->get_config('password', '')
         );
+        $headers = $remotelrs.getHeaders();
+        if($headers != null) {
+            $headers->userAddress = $USER->profile['blockchainAddress'];
+            debugging('Not Empty Headers: ' .$headers, DEBUG_DEVELOPER);
+            $remotelrs.setHeaders($headers);
+        } else {
+            $headers = new stdClass();
+            $headers->userAddress = $USER->profile['blockchainAddress'];
+            debugging('Empty Headers: ' .$headers, DEBUG_DEVELOPER);
+            $remotelrs.setHeaders($headers);
+        }
         if (!empty($CFG->proxyhost)) {
             $remotelrs->setProxy($CFG->proxyhost.':'.$CFG->proxyport);
         }
