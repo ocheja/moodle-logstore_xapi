@@ -27,6 +27,7 @@ namespace logstore_xapi\log;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
+require_once(__DIR__.'/user/profile/lib.php');
 use \tool_log\log\writer as log_writer;
 use \tool_log\log\manager as log_manager;
 use \tool_log\helper\store as helper_store;
@@ -206,14 +207,15 @@ class store extends php_obj implements log_writer {
             $this->get_config('password', '')
         );
         $headers = $remotelrs->getHeaders();
+        profile_load_custom_fields($USER);
         if($headers != null) {
             $headers->userAddress = $USER->profile['blockchainAddress'];
-            debugging('Not Empty Headers: ' .$headers, DEBUG_DEVELOPER);
+            debugging('Not Empty Headers: ' .$headers->userAddress, DEBUG_DEVELOPER);
             $remotelrs->setHeaders($headers);
         } else {
-            $headers = new stdClass();
+            $headers = new php_obj();
             $headers->userAddress = $USER->profile['blockchainAddress'];
-            debugging('Empty Headers: ' .$headers, DEBUG_DEVELOPER);
+            debugging('Empty Headers: ' .$headers->userAddress, DEBUG_DEVELOPER);
             $remotelrs->setHeaders($headers);
         }
         if (!empty($CFG->proxyhost)) {
