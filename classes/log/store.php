@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
 require_once(__DIR__.'/user/profile/lib.php');
+require_once(__DIR__ . '/../../src/autoload.php');
+
 use \tool_log\log\writer as log_writer;
 use \tool_log\log\manager as log_manager;
 use \tool_log\helper\store as helper_store;
@@ -84,99 +86,74 @@ class store extends php_obj implements log_writer {
      *
      */
     protected function is_event_ignored(event_base $event) {
-        if ((!CLI_SCRIPT || PHPUNIT_TEST) && !$this->logguests && isguestuser()) {
+        $allowguestlogging = $this->get_config('logguests', 1);
+        if ((!CLI_SCRIPT || PHPUNIT_TEST) && !$allowguestlogging && isguestuser()) {
             // Always log inside CLI scripts because we do not login there.
             return true;
         }
 
-        if (!in_array($event->eventname, $this->routes)) {
-            // Ignore event if the store settings do not want to store it.
-            return true;
-        }
-        return false;
+        $enabledevents = explode(',', $this->get_config('routes', ''));
+        $isdisabledevent = !in_array($event->eventname, $enabledevents);
+        return $isdisabledevent;
     }
 
     /**
      * Insert events in bulk to the database. Overrides helper_writer.
      * @param array $events raw event data
-     *
      */
     protected function insert_event_entries(array $events) {
         global $DB;
 
         // If in background mode, just save them in the database.
-        if (get_config('logstore_xapi', 'backgroundmode')) {
+        if ($this->get_config('backgroundmode', false)) {
             $DB->insert_records('logstore_xapi_log', $events);
         } else {
             $this->process_events($events);
         }
     }
 
+    public function get_max_batch_size() {
+        return $this->get_config('maxbatchsize', 100);
+    }
+
     public function process_events(array $events) {
-
-        // Initializes required services.
-        $xapicontroller = new xapi_controller($this->connect_xapi_repository());
-        $moodlecontroller = new moodle_controller($this->connect_moodle_repository());
-        $translatorcontroller = new translator_controller();
-
-        // Emits events to other APIs.
-        foreach ($events as $index => $event) {
-            $events[$index] = (array) $event;
-        }
-
-        $this->error_log('');
-        $this->error_log_value('events', $events);
-        $moodleevents = $moodlecontroller->create_events($events);
-
-        // Clear the user email if mbox setting is not set to mbox.
-        $mbox = get_config('logstore_xapi', 'mbox');
-        foreach (array_keys($moodleevents) as $eventkey) {
-            $moodleevents[$eventkey]['sendmbox'] = $mbox;
-        }
-
-        $this->error_log_value('moodleevent', $moodleevents);
-        $translatorevents = $translatorcontroller->create_events($moodleevents);
-        $this->error_log_value('translatorevents', $translatorevents);
-
-        if (empty($translatorevents)) {
-            return [];
-        }
-
-        // Split statements into batches.
-        $eventbatches = array($translatorevents);
-        $maxbatchsize = get_config('logstore_xapi', 'maxbatchsize');
-
-        if (!empty($maxbatchsize) && $maxbatchsize < count($translatorevents)) {
-            $eventbatches = array_chunk($translatorevents, $maxbatchsize);
-        }
-
-        $translatorevent = new Event();
-        $translatoreventreadreturn = @$translatorevent->read([]);
-
-        $sentevents = [];
-        foreach ($eventbatches as $translatoreventsbatch) {
-            $xapievents = $xapicontroller->create_events($translatoreventsbatch);
-            foreach (array_keys($xapievents) as $key) {
-                if (is_numeric($key)) {
-                    $k = $xapievents[$key]['context']['extensions'][$translatoreventreadreturn[0]['context_ext_key']]['id'];
-                    $sentevents[$k] = $xapievents['last_action_result'];
-                }
-            }
-            $this->error_log_value('xapievents', $xapievents);
-        }
-
-        return $sentevents;
-    }
-
-    private function error_log_value($key, $value) {
-        $this->error_log('['.$key.'] '.json_encode($value));
-    }
-
-    private function error_log($message) {
-        if ($this->loggingenabled) {
-            // @codingStandardsIgnoreLine
-            error_log($message."\r\n", 3, __DIR__.'/error_log.txt');
-        }
+        global $DB;
+        global $CFG;
+        require(__DIR__ . '/../../version.php');
+        $logerror = function ($message = '') {
+            debugging($message, DEBUG_NORMAL);
+        };
+        $loginfo = function ($message = '') {
+            debugging($message, DEBUG_DEVELOPER);
+        };
+        $handlerconfig = [
+            'log_error' => $logerror,
+            'log_info' => $loginfo,
+            'transformer' => [
+                'source_url' => 'http://moodle.org',
+                'source_name' => 'Moodle',
+                'source_version' => $CFG->release,
+                'source_lang' => 'en',
+                'send_mbox' => $this->get_config('mbox', false),
+                'send_response_choices' => $this->get_config('sendresponsechoices', false),
+                'send_short_course_id' => $this->get_config('shortcourseid', false),
+                'send_course_and_module_idnumber' => $this->get_config('sendidnumber', false),
+                'send_username' => $this->get_config('send_username', false),
+                'plugin_url' => 'https://github.com/xAPI-vle/moodle-logstore_xapi',
+                'plugin_version' => $plugin->release,
+                'repo' => new \src\transformer\repos\MoodleRepository($DB),
+                'app_url' => $CFG->wwwroot,
+            ],
+            'loader' => [
+                'loader' => 'moodle_curl_lrs',
+                'lrs_endpoint' => $this->get_config('endpoint', ''),
+                'lrs_username' => $this->get_config('username', ''),
+                'lrs_password' => $this->get_config('password', ''),
+                'lrs_max_batch_size' => $this->get_max_batch_size(),
+            ],
+        ];
+        $loadedevents = \src\handler($handlerconfig, $events);
+        return $loadedevents;
     }
 
     /**
